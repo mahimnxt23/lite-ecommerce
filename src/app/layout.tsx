@@ -1,31 +1,31 @@
-import type {Metadata} from "next";
-import {Jost} from "next/font/google";
-import "./globals.css";
-import {Footer, Navbar} from "@/components";
+import { Footer, Navbar } from "@/components";
+import type { Metadata } from "next";
+import { Jost } from "next/font/google";
 import React from "react";
+import "./globals.css";
 
 const jost = Jost({
-    variable: "--font-josh",
-    subsets: ["latin"],
+  variable: "--font-josh",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-    title: "Lite E-commerce",
-    description: "A lightweight e-commerce site",
+  title: "Lite E-commerce",
+  description: "A lightweight e-commerce site",
 };
 
 export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode;
+  children,
+}: Readonly<{
+  children: React.ReactNode;
 }>) {
-    return (
-        <html lang="en">
-        <body className={`${jost.className} antialiased`}>
-        <Navbar/>
+  return (
+    <html lang="en">
+      <body className={`${jost.className} antialiased`}>
+        <Navbar />
         {children}
-        <Footer/>
-        </body>
-        </html>
-    );
+        <Footer />
+      </body>
+    </html>
+  );
 }
