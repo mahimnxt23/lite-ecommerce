@@ -22,14 +22,7 @@ export default function Navbar() {
         aria-label="Primary"
       >
         <Link href="/" aria-label="Nike Home" className="flex items-center">
-          <Image
-            src="/logo.svg"
-            alt="Nike"
-            width={28}
-            height={28}
-            priority
-            className="invert"
-          />
+          <Image src="/logo.svg" alt="Nike" width={28} height={28} priority className="invert" />
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">
@@ -70,9 +63,7 @@ export default function Navbar() {
 
       <div
         id="mobile-menu"
-        className={`border-t border-light-300 md:hidden ${
-          open ? "block" : "hidden"
-        }`}
+        className={`border-t border-light-300 md:hidden ${open ? "block" : "hidden"}`}
       >
         <ul className="space-y-2 px-4 py-3">
           {NAV_LINKS.map((l) => (

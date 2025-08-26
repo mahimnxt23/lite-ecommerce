@@ -1,31 +1,25 @@
-import { Footer, Navbar } from "@/components";
 import type { Metadata } from "next";
 import { Jost } from "next/font/google";
-import React from "react";
 import "./globals.css";
 
 const jost = Jost({
-  variable: "--font-josh",
+  variable: "--font-jost",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Lite E-commerce",
-  description: "A lightweight e-commerce site",
+  title: "Nike",
+  description: "An e-commerce platform for Nike shoes",
 };
 
-export default function RootLayout({
+export default function RootShell({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
-      <body className={`${jost.className} antialiased`}>
-        <Navbar />
-        {children}
-        <Footer />
-      </body>
+      <body className={`${jost.className} antialiased`}>{children}</body>
     </html>
   );
 }
