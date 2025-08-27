@@ -1,9 +1,9 @@
 "use client";
 
+import { useVariantStore } from "@/store/variant";
+import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
-import { useVariantStore } from "@/store/variant";
 
 type Variant = {
   color: string;
@@ -28,14 +28,18 @@ export default function ProductGallery({
   className = "",
 }: ProductGalleryProps) {
   const validVariants = useMemo(
-    () => variants.filter((v) => Array.isArray(v.images) && v.images.some(isValidSrc)),
+    () =>
+      variants.filter(
+        (v) => Array.isArray(v.images) && v.images.some(isValidSrc)
+      ),
     [variants]
   );
 
-  const variantIndex =
-    useVariantStore(
-      (s) => s.selectedByProduct[productId] ?? Math.min(initialVariantIndex, Math.max(validVariants.length - 1, 0))
-    );
+  const variantIndex = useVariantStore(
+    (s) =>
+      s.selectedByProduct[productId] ??
+      Math.min(initialVariantIndex, Math.max(validVariants.length - 1, 0))
+  );
 
   const images = validVariants[variantIndex]?.images?.filter(isValidSrc) ?? [];
   const [activeIndex, setActiveIndex] = useState(0);
@@ -73,14 +77,25 @@ export default function ProductGallery({
             key={`${src}-${i}`}
             aria-label={`Thumbnail ${i + 1}`}
             onClick={() => setActiveIndex(i)}
-            className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-light-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] ${i === activeIndex ? "ring-[--color-dark-500]" : ""}`}
+            className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-light-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] ${
+              i === activeIndex ? "ring-[--color-dark-500]" : ""
+            }`}
           >
-            <Image src={src} alt={`Thumbnail ${i + 1}`} fill sizes="64px" className="object-cover" />
+            <Image
+              src={src}
+              alt={`Thumbnail ${i + 1}`}
+              fill
+              sizes="64px"
+              className="object-cover"
+            />
           </button>
         ))}
       </div>
 
-      <div ref={mainRef} className="order-1 relative w-full h-[500px] overflow-hidden rounded-xl bg-light-200 lg:order-2">
+      <div
+        ref={mainRef}
+        className="order-1 relative w-full h-[500px] overflow-hidden rounded-xl bg-light-200 lg:order-2"
+      >
         {images.length > 0 ? (
           <>
             <Image
@@ -118,7 +133,6 @@ export default function ProductGallery({
           </div>
         )}
       </div>
-
     </section>
   );
 }
