@@ -4,7 +4,7 @@ import {cookies, headers} from "next/headers";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { guests } from "@/lib/db/schema/index";
+import { guests, carts, cartItems } from "@/lib/db/schema/index";
 import { and, eq, lt } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
@@ -130,9 +130,54 @@ export async function mergeGuestCartWithUserCart() {
 
 async function migrateGuestToUser() {
   const cookieStore = await cookies();
-  const token = (await cookieStore).get("guest_session")?.value;
-  if (!token) return;
+  const guestToken = cookieStore.get("guest_session")?.value;
 
-  await db.delete(guests).where(eq(guests.sessionToken, token));
-  (await cookieStore).delete("guest_session");
+  if (!guestToken) return;
+
+  const user = await getCurrentUser();
+  if (!user) return;
+
+  const guestCart = await db.query.carts.findFirst({
+    where: eq(carts.guestId, guestToken),
+    with: { items: true },
+  });
+
+  if (!guestCart) return;
+
+  const userCart = await db.query.carts.findFirst({
+    where: eq(carts.userId, user.id),
+  });
+
+  if (!userCart) {
+    await db
+      .update(carts)
+      .set({ userId: user.id, guestId: null })
+      .where(eq(carts.id, guestCart.id));
+  } else {
+    for (const guestItem of guestCart.items) {
+      const userCartItem = await db.query.cartItems.findFirst({
+        where: and(
+          eq(cartItems.cartId, userCart.id),
+          eq(cartItems.productVariantId, guestItem.productVariantId)
+        ),
+      });
+
+      if (userCartItem) {
+        await db
+          .update(cartItems)
+          .set({ quantity: userCartItem.quantity + guestItem.quantity })
+          .where(eq(cartItems.id, userCartItem.id));
+      } else {
+        await db.insert(cartItems).values({
+          cartId: userCart.id,
+          productVariantId: guestItem.productVariantId,
+          quantity: guestItem.quantity,
+        });
+      }
+    }
+    await db.delete(carts).where(eq(carts.id, guestCart.id));
+  }
+
+  await db.delete(guests).where(eq(guests.sessionToken, guestToken));
+  cookieStore.delete("guest_session");
 }

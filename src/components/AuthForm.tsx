@@ -8,9 +8,10 @@ import {useRouter} from "next/navigation";
 type Props = {
   mode: "sign-in" | "sign-up";
   onSubmit: (formData: FormData) => Promise<{ ok: boolean; userId?: string } | void>;
+  redirectUrl?: string;
 };
 
-export default function AuthForm({ mode, onSubmit }: Props) {
+export default function AuthForm({ mode, onSubmit, redirectUrl }: Props) {
   const [show, setShow] = useState(false);
   const router = useRouter();
 
@@ -22,11 +23,13 @@ export default function AuthForm({ mode, onSubmit }: Props) {
     try {
       const result = await onSubmit(formData);
 
-      if(result?.ok) router.push("/");
+      if (result?.ok) {
+        router.push(redirectUrl || "/");
+      }
     } catch (e) {
       console.log("error", e);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
